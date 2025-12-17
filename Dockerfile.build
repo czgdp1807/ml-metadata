@@ -19,8 +19,8 @@ RUN apt-get update && apt-get install -y \
     openjdk-11-jdk \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python build tools
-RUN python3 -m pip install --upgrade pip setuptools wheel
+# Install Python build tools and test dependencies
+RUN python3 -m pip install --upgrade pip setuptools wheel pytest
 
 # Create python symlink for Bazel (Bazel looks for 'python' not 'python3')
 RUN ln -s /usr/bin/python3 /usr/bin/python
