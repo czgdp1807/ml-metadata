@@ -42,6 +42,8 @@ plugins:
       default_handler: python
       handlers:
         python:
+          import:
+            - https://docs.python.org/3/objects.inv
           options:
             show_source: true
             show_root_heading: true
@@ -68,8 +70,6 @@ plugins:
               - "!_test$"
             extensions:
               - griffe_inherited_docstrings
-          import:
-            - https://docs.python.org/3/objects.inv
   - caption:
       figure:
         ignore_alt: true
