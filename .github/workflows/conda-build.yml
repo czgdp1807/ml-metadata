@@ -55,15 +55,6 @@ jobs:
       run: |
         python setup.py bdist_wheel
 
-    - name: Repair wheel (Linux)
-      if: runner.os == 'Linux'
-      shell: bash -l {0}
-      run: |
-        WHEEL_PATH="$(ls dist/*.whl)"
-        WHEEL_DIR=$(dirname "${WHEEL_PATH}")
-        auditwheel repair --plat manylinux2014_x86_64 -w "${WHEEL_DIR}" "${WHEEL_PATH}"
-        rm "${WHEEL_PATH}"
-
     - name: Upload wheel artifact
       uses: actions/upload-artifact@v4.4.0
       with:
