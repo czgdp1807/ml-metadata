@@ -4,7 +4,7 @@ channels:
   - conda-forge
 dependencies:
   # Note: Bazel is installed separately via official installer (conda package is unreliable)
-  - setuptools
+  - setuptools<69.3  # Pin to avoid Metadata-Version 2.4 (PyPI only supports up to 2.3)
   - wheel
   - pip
   - numpy>=1.23,<2.0
