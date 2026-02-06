@@ -6,6 +6,12 @@
 
 ## Deprecations
 
+*   Deprecate ZetaSQL-based filter_query functionality. The `filter_query`
+    parameter in ListOperationOptions that relies on ZetaSQL for declarative
+    filtering is deprecated and will be removed in version 1.18.0. ZetaSQL
+    dependency is being removed from ML Metadata. Users should migrate to
+    alternative filtering approaches before the 1.18.0 release.
+
 ## Bug Fixed and Other Changes
 
 # Version 1.17.0
