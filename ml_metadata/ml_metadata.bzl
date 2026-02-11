@@ -46,6 +46,7 @@ proto_descriptor = rule(
 
 def _py_proto_library_impl(ctx):
     proto_deps = ctx.attr.deps
+    use_grpc = ctx.attr.use_grpc_plugin
 
     all_sources = []
     py_infos = []
@@ -70,6 +71,9 @@ def _py_proto_library_impl(ctx):
     for proto_src in workspace_sources:
         basename = proto_src.basename[:-6]
         py_outputs.append(ctx.actions.declare_file(basename + "_pb2.py"))
+        # Add grpc output file if grpc plugin is enabled
+        if use_grpc:
+            py_outputs.append(ctx.actions.declare_file(basename + "_pb2_grpc.py"))
 
     if py_outputs:
         proto_path_args = ["--proto_path=."]
@@ -109,6 +113,16 @@ def _py_proto_library_impl(ctx):
 
         proto_file_args = [src.short_path for src in workspace_sources]
 
+        # Build protoc arguments
+        protoc_args = ["--python_out=" + ctx.bin_dir.path]
+
+        # Add grpc plugin if enabled
+        tools = []
+        if use_grpc and ctx.executable._grpc_plugin:
+            protoc_args.append("--grpc_python_out=" + ctx.bin_dir.path)
+            protoc_args.append("--plugin=protoc-gen-grpc_python=" + ctx.executable._grpc_plugin.path)
+            tools.append(ctx.executable._grpc_plugin)
+
         ctx.actions.run(
             inputs = depset(
                 direct = workspace_sources,
@@ -120,7 +134,8 @@ def _py_proto_library_impl(ctx):
             ),
             outputs = py_outputs,
             executable = ctx.executable._protoc,
-            arguments = ["--python_out=" + ctx.bin_dir.path] + proto_path_args + proto_file_args,
+            arguments = protoc_args + proto_path_args + proto_file_args,
+            tools = tools,
             mnemonic = "ProtocPython",
         )
 
@@ -148,8 +163,17 @@ _py_proto_library_rule = rule(
         "deps": attr.label_list(
             providers = [[ProtoInfo], [PyInfo]],
         ),
+        "use_grpc_plugin": attr.bool(
+            default = False,
+            doc = "Whether to use the gRPC plugin to generate service stubs",
+        ),
         "_protoc": attr.label(
             default = "@com_google_protobuf//:protoc",
+            executable = True,
+            cfg = "exec",
+        ),
+        "_grpc_plugin": attr.label(
+            default = "@com_github_grpc_grpc//src/compiler:grpc_python_plugin",
             executable = True,
             cfg = "exec",
         ),
@@ -254,7 +278,7 @@ def ml_metadata_proto_library_py(
         oss_deps = [],
         use_grpc_plugin = False):
     """Opensource py_proto_library."""
-    _ignore = [api_version, srcs, use_grpc_plugin]
+    _ignore = [api_version, srcs]
     if not proto_library:
         fail("proto_library parameter is required for ml_metadata_proto_library_py")
 
@@ -263,6 +287,7 @@ def ml_metadata_proto_library_py(
     _py_proto_library_rule(
         name = name,
         deps = [actual_proto_library] + deps + oss_deps,
+        use_grpc_plugin = use_grpc_plugin,
         visibility = visibility,
         testonly = testonly,
     )
