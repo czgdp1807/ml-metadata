@@ -14,6 +14,11 @@
 
 # This macro is needed in order for mlmd to build with ZetaSQL which can only
 # be compiled upon c++17 or higher.
+# Disable bzlmod for protobuf v4.25.6 compatibility
+# TODO: migrate all dependencies from WORKSPACE to MODULE.bazel
+# https://github.com/protocolbuffers/protobuf/issues/14313
+common --noenable_bzlmod
+
 build --cxxopt="-std=c++17"
 
 # Needed to avoid zetasql proto error.
