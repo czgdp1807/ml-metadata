@@ -133,7 +133,7 @@ with open("requirements-docs.txt") as fp:
 docs_reqs = [req.replace("\n", "") for req in docs_reqs]
 
 setup(
-    name='ml-metadata',
+    name='ml-metadata-czgdp1807',
     version=__version__,
     author='Google LLC',
     author_email='tensorflow-extended-dev@googlegroups.com',
