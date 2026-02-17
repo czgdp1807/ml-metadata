@@ -823,6 +823,7 @@ absl::Status QueryConfigExecutor::ListNodeIDsUsingOptions(
         "Invalid Node passed to ListNodeIDsUsingOptions");
   }
 
+  // ZetaSQL filter_query feature removed - not supported
   if (options.has_filter_query() && !options.filter_query().empty()) {
     return absl::UnimplementedError(
         "filter_query is not supported - ZetaSQL dependency removed");
